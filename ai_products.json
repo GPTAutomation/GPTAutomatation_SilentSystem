@@ -1,0 +1,17 @@
+[
+  {
+    "pain_point": "How do I get freelance clients without a portfolio?",
+    "solution": "{\n  \"product\": \"Freelancer Cold DM Generator\",\n  \"description\": \"An AI tool that writes custom cold messages for landing freelance gigs.\",\n  \"monetization\": \"Free version for 5 messages/day, upgrade for unlimited\"\n}",
+    "created_at": "2025-06-21T12:00:00Z"
+  },
+  {
+    "pain_point": "Any AI tools to make social media content faster?",
+    "solution": "{\n  \"product\": \"AI Content Calendar Builder\",\n  \"description\": \"Create a full month of content ideas with captions using a few keywords.\",\n  \"monetization\": \"One-time $5 download or included in bundle\"\n}",
+    "created_at": "2025-06-21T12:10:00Z"
+  },
+  {
+    "pain_point": "Is there a quick way to build landing pages for digital products?",
+    "solution": "{\n  \"product\": \"No-Code Landing Page AI\",\n  \"description\": \"Just describe your product and it generates a full landing page in seconds.\",\n  \"monetization\": \"Upsell for access to templates, forms, and hosting\"\n}",
+    "created_at": "2025-06-21T12:20:00Z"
+  }
+]
