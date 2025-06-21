@@ -45,7 +45,7 @@ def extract_pain_points(posts):
     return leads
 
 def save_leads(leads):
-    with open("leads_raw.json", "a") as f:
+    with open("leads_raw.json", "a", encoding="utf-8") as f:
         for lead in leads:
             json.dump(lead, f)
             f.write("\n")
@@ -86,7 +86,7 @@ def process_all_leads():
         }
     ]
 
-    with open("ai_products.json", "w") as f:
+    with open("ai_products.json", "w", encoding="utf-8") as f:
         json.dump(all_products, f, indent=2)
 
 # --- MODULE 3: PRODUCT PAGE GENERATOR ---
@@ -95,62 +95,90 @@ def launch_product_pages():
         print("No AI product file found.")
         return
 
-    with open("ai_products.json", "r") as f:
+    with open("ai_products.json", "r", encoding="utf-8") as f:
         products = json.load(f)
 
     if not os.path.exists("public"):
         os.makedirs("public")
 
+    print(f"Building {len(products)} products...")
+
     for i, product in enumerate(products):
+        solution = json.loads(product['solution'])
         filename = f"product_{i+1}.html"
         filepath = os.path.join("public", filename)
-        with open(filepath, "w") as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             f.write(f"""
+                <!DOCTYPE html>
                 <html>
-                <head><title>{product['pain_point']}</title></head>
+                <head>
+                    <meta charset=\"UTF-8\">
+                    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+                    <title>{solution['product']}</title>
+                    <style>
+                        body {{ font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }}
+                        .card {{ background: #fff; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }}
+                        h1 {{ color: #333; }}
+                        p {{ font-size: 16px; }}
+                        a.button {{ display: inline-block; margin-top: 15px; padding: 10px 20px; background: #0070f3; color: white; text-decoration: none; border-radius: 4px; }}
+                    </style>
+                </head>
                 <body>
-                    <h1>{product['pain_point']}</h1>
-                    <pre>{product['solution']}</pre>
-                    <p><strong>Contact:</strong> {CONTACT_EMAIL}</p>
-                    <a href="{PAYPAL_LINK}" target="_blank">Buy Now via PayPal</a>
+                    <div class=\"card\">
+                        <h1>{solution['product']}</h1>
+                        <p><strong>Problem:</strong> {product['pain_point']}</p>
+                        <p><strong>Description:</strong> {solution['description']}</p>
+                        <p><strong>Monetization:</strong> {solution['monetization']}</p>
+                        <a class=\"button\" href=\"{PAYPAL_LINK}\" target=\"_blank\">Buy Now via PayPal</a>
+                        <p><strong>Contact:</strong> {CONTACT_EMAIL}</p>
+                    </div>
                 </body>
                 </html>
             """)
         print(f"Deployed: {filepath}")
 
     # --- MODULE 4: INDEX PAGE GENERATOR ---
-    index_path = os.path.join("public", "index.html")
-    with open(index_path, "w") as index:
-        index.write("""
-        <html>
-        <head><title>AI Product Bundle</title></head>
-        <body>
-            <h1>🔥 Exclusive AI Productivity Toolkit 🔥</h1>
-            <p>Access all tools in one discounted bundle.</p>
-            <ul>
-        """)
-        for i, product in enumerate(products):
-            index.write(f'<li><a href="product_{i+1}.html">{product["pain_point"]}</a></li>\n')
-        index.write(f"""
-            </ul>
-            <br>
-            <a href="{PAYPAL_LINK}" target="_blank">💰 Get the Full Bundle Now</a>
-            <p><strong>Contact:</strong> {CONTACT_EMAIL}</p>
-        </body>
-        </html>
-        """)
-        print("Homepage created: public/index.html")
+    try:
+        index_path = os.path.join("public", "index.html")
+        with open(index_path, "w", encoding="utf-8") as index:
+            index.write("""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset=\"UTF-8\">
+                <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+                <title>AI Product Bundle</title>
+                <style>
+                    body { font-family: Arial, sans-serif; background: #fafafa; padding: 40px; text-align: center; }
+                    h1 { color: #222; margin-bottom: 20px; }
+                    ul { list-style: none; padding: 0; max-width: 600px; margin: 0 auto; }
+                    li { background: #fff; padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); text-align: left; }
+                    a { text-decoration: none; color: #0070f3; font-weight: bold; }
+                    .bundle-btn { display: inline-block; margin-top: 30px; padding: 14px 28px; background: #111; color: #fff; border-radius: 5px; text-decoration: none; }
+                    p { color: #555; margin-top: 30px; }
+                </style>
+            </head>
+            <body>
+                <h1>🔥 Exclusive AI Productivity Toolkit 🔥</h1>
+                <p>Access all tools in one discounted bundle.</p>
+                <ul>
+            """)
+            for i, product in enumerate(products):
+                solution = json.loads(product["solution"])
+                index.write(f'<li><a href="product_{i+1}.html">{solution["product"]}</a></li>\n')
+            index.write(f"""
+                </ul>
+                <a class=\"bundle-btn\" href=\"{PAYPAL_LINK}\" target=\"_blank\">💰 Get the Full Bundle Now</a>
+                <p><strong>Contact:</strong> {CONTACT_EMAIL}</p>
+            </body>
+            </html>
+            """)
+            print("Homepage created: public/index.html")
+    except Exception as e:
+        print(f"❌ Failed to create homepage: {repr(e)}")
 
 # --- MAIN ---
 def main():
-    # Skip scraping for this run; use pre-filled data
-    # all_leads = []
-    # for sub in SUBREDDITS:
-    #     posts = fetch_posts(sub)
-    #     leads = extract_pain_points(posts)
-    #     all_leads.extend(leads)
-
-    # save_leads(all_leads)
     process_all_leads()
     launch_product_pages()
 
