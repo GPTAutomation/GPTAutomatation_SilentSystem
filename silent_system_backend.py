@@ -1,6 +1,6 @@
 # === SILENT SYSTEM BACKEND ===
-# Module: search_scraper.py + generate_solution.py + product_launcher.py + bundle_page + auto_public_folder
-# Purpose: Harvest pain points + generate AI-powered responses + deploy silent products + generate bundle landing + move HTML to public folder
+# Module: search_scraper.py + generate_solution.py + product_launcher.py + index_page + auto_public_folder
+# Purpose: Harvest pain points + generate AI-powered responses + deploy silent products + generate landing + move HTML to public folder
 
 import requests
 import json
@@ -29,7 +29,6 @@ def fetch_posts(subreddit):
     except:
         return []
 
-
 def extract_pain_points(posts):
     leads = []
     for post in posts:
@@ -45,13 +44,11 @@ def extract_pain_points(posts):
             })
     return leads
 
-
 def save_leads(leads):
     with open("leads_raw.json", "a") as f:
         for lead in leads:
             json.dump(lead, f)
             f.write("\n")
-
 
 # --- MODULE 2: GPT SOLUTION GENERATOR ---
 def generate_solution(lead):
@@ -69,7 +66,6 @@ def generate_solution(lead):
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message['content']
-
 
 def process_all_leads():
     all_products = [
@@ -92,7 +88,6 @@ def process_all_leads():
 
     with open("ai_products.json", "w") as f:
         json.dump(all_products, f, indent=2)
-
 
 # --- MODULE 3: PRODUCT PAGE GENERATOR ---
 def launch_product_pages():
@@ -123,10 +118,10 @@ def launch_product_pages():
             """)
         print(f"Deployed: {filepath}")
 
-    # --- MODULE 4: BUNDLE PAGE GENERATOR ---
-    bundle_path = os.path.join("public", "bundle.html")
-    with open(bundle_path, "w") as bundle:
-        bundle.write("""
+    # --- MODULE 4: INDEX PAGE GENERATOR ---
+    index_path = os.path.join("public", "index.html")
+    with open(index_path, "w") as index:
+        index.write("""
         <html>
         <head><title>AI Product Bundle</title></head>
         <body>
@@ -135,8 +130,8 @@ def launch_product_pages():
             <ul>
         """)
         for i, product in enumerate(products):
-            bundle.write(f'<li><a href="product_{i+1}.html">{product["pain_point"]}</a></li>\n')
-        bundle.write(f"""
+            index.write(f'<li><a href="product_{i+1}.html">{product["pain_point"]}</a></li>\n')
+        index.write(f"""
             </ul>
             <br>
             <a href="{PAYPAL_LINK}" target="_blank">💰 Get the Full Bundle Now</a>
@@ -144,8 +139,7 @@ def launch_product_pages():
         </body>
         </html>
         """)
-        print("Bundle page created: public/bundle.html")
-
+        print("Homepage created: public/index.html")
 
 # --- MAIN ---
 def main():
@@ -159,7 +153,6 @@ def main():
     # save_leads(all_leads)
     process_all_leads()
     launch_product_pages()
-
 
 if __name__ == "__main__":
     main()
